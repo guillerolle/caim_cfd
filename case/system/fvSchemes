@@ -15,18 +15,15 @@ FoamFile
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 
-
 ddtSchemes
 {
-    default         steadyState;
+    default         backward;
 }
 
 divSchemes
 {
-    default         none;
     // Use second-order accurate convection
-    // Bounded schemes for steady-state solution
-    div(phi,U)      bounded Gauss linearUpwindV grad(U);
+    div(phi,U)      bounded Gauss upwind;
     div((nuEff*dev2(T(grad(U))))) Gauss linear;
     div(div(phi,U)) Gauss linear;
 }

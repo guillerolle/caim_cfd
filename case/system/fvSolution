@@ -14,18 +14,23 @@ FoamFile
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-SIMPLE
+PIMPLE
 {
-    // Non-orthogonal correctors for robustness on tet meshes. Porous baffles require a
-    // higher number of corrections.
-    nNonOrthogonalCorrectors 5;
-
-    consistent no;  // Setting this impairs stability of porous baffles
-    residualControl
+    nOuterCorrectors 5;
+    nNonOrthogonalCorrectors 2;
+    nCorrectors         3;
+    outerCorrectorResidualControl
     {
-        p 0.0001;
-        U 0.0001;
-        "(k|epsilon|omega|f|v2|nuTilda)" 0.0001;
+        U
+        {
+            tolerance   0.0001;
+            relTol      0;
+        }
+        p
+        {
+            tolerance   0.0001;
+            relTol      0;
+        }
     }
     pRefValue   0;
     pRefCell    0;
@@ -44,8 +49,8 @@ solvers
     "(p|p_rgh|pcorr)"
     {
         solver           GAMG;
-        tolerance        1e-8;
-        relTol           0.01;
+        tolerance        1e-7;
+        relTol           0.001;
         smoother         symGaussSeidel;
         nPreSweeps       0;
         nPostSweeps      2;
@@ -65,7 +70,7 @@ solvers
     {
         solver           smoothSolver;
         smoother         symGaussSeidel;
-        tolerance        1e-8;
+        tolerance        1e-6;
         relTol           0.1;
         nSweeps          1;
     }
@@ -98,6 +103,8 @@ relaxationFactors
     equations
     {
         U               0.6;
+        UFinal          0.7;
+	p		0.3;
     }
     fields
     {

@@ -14,23 +14,27 @@ FoamFile
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-application     simpleFoam;
+application     pimpleFoam;
 
-startFrom       startTime;
+startFrom       latestTime; //startTime;
 
 startTime       0;
 
 stopAt          endTime;
 
-deltaT          1;
+deltaT          0.0002;
 
-endTime         2000;
+endTime         1.0;
 
-writeControl    timeStep;
+writeControl    adjustableRunTime;
 
-writeInterval   100.0;
+writeInterval   0.01;
 
 purgeWrite      0;
+
+adjustTimeStep  no;
+
+maxCo           5;
 
 
 writeFormat     ascii;
@@ -45,5 +49,11 @@ libs
     // Needed for availability of porous baffle boundary in potentialFoam
     "libturbulenceModels.so"
 );
+
+functions
+{
+#includeFunc CourantNo
+
+}
 
 // ************************************************************************* //
