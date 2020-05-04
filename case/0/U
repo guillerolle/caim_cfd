@@ -1,51 +1,54 @@
 /*--------------------------------*- C++ -*----------------------------------*\
-| =========                 |                                                 |
-| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
-|  \\    /   O peration     | Version:  4.x                                   |
-|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
-|    \\/     M anipulation  |                                                 |
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Version:  dev
+     \\/     M anipulation  |
 \*---------------------------------------------------------------------------*/
 FoamFile
 {
     version     2.0;
     format      ascii;
     class       volVectorField;
+    location    "0";
     object      U;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-dimensions      [0 1 -1 0 0 0 0];
+dimensions      [ 0 1 -1 0 0 0 0 ];
 
-internalField   uniform (0.0 0.0 0.0);
+internalField   uniform ( 0 0 0 );
 
 boundaryField
 {
-
     inlet
     {
-        type        pressureInletOutletVelocity;
-        value       $internalField;
+        type            zeroGradient;
+//        type            pressureInletOutletVelocity;
+//        value           $internalField;
     }
-
     outlet
     {
-        type        pressureInletOutletVelocity;
-        value       $internalField;
+        type            pressureInletOutletVelocity;
+        value           $internalField;
     }
-
     wall
     {
-        // movingWallVelocity reduces to fixedValue if the mesh is not moving
-        type        movingWallVelocity;
-        value       uniform (0 0 0);
+//        type            movingWallVelocity;
+        type            fixedValue;
+        value           uniform ( 0 0 0 );
     }
-
     defaultFaces
     {
-        type        slip;
-        value       $internalField;
+        type            slip;
+        value           $internalField;
     }
-
+    "procB.*"
+    {
+        type            processor;
+        value           uniform ( 0 0 0 );
+    }
 }
+
 
 // ************************************************************************* //

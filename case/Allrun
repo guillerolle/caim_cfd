@@ -11,10 +11,12 @@ runCommand()
     if [ ! $err -eq 0 ]; then exit $err; fi
 }
 
-# Unset and source bashrc
-FOAMDIR="/home/guillermo/Instaladores/OpenFOAM/OpenFOAM-v1906"
-source "$FOAMDIR/etc/config.sh/unset" 2> /dev/null
-source "$FOAMDIR/etc/bashrc"
+# Unset and source bashrc: recomiendo usar las variables estandar de FOAM!
+# Esto lo hacía con una variable interna por si tratabas de correr sin tener
+# la misma versión en el source de FOAM del bash
+#FOAMDIR="/home/guillermo/OpenFOAM/guillermo-v1906"
+#source "$FOAM_ETC/config.sh/unset" 2> /dev/null
+source "$FOAM_ETC/bashrc"
 
 # Copy mesh from mesh case dir if available
 MESHDIR="../meshCase"
@@ -32,6 +34,16 @@ fi
 runCommand createPatch -overwrite
 
 # Run application in parallel
-runCommand decomposePar -force
+runCommand decomposePar -force -copyZero
+
+# Create near wall layers to avoid bad BL resolution
+runCommand mpirun -n 4 snappyHexMesh -parallel -overwrite -dict system/snappyHexMeshDict.layers
+
+# Update patch name and type
+runCommand mpirun -n 4 createPatch -parallel -overwrite
+# Update BC
+runCommand mpirun -n 4 changeDictionary -parallel 
+
+# Run case
 runCommand mpirun -n 4 pimpleFoam -parallel
 
