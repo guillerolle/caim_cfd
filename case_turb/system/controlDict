@@ -1,0 +1,101 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  4.x                                   |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      controlDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+application     pimpleFoam;
+
+startFrom       latestTime; //startTime;
+
+startTime       0;
+
+stopAt          endTime;
+//stopAt          writeNow;
+
+//Running pimple: transient
+deltaT          0.000002;
+endTime         0.100;
+writeControl    adjustableRunTime;
+writeInterval   0.005;
+
+//Running simple: steady
+//deltaT          1;
+//endTime         1000;
+//writeControl    timeStep;
+//writeInterval   100;
+
+
+purgeWrite      0;
+
+adjustTimeStep  yes;
+
+maxCo           5;
+
+
+writeFormat     ascii;
+
+writePrecision  8;
+
+
+runTimeModifiable true;
+
+libs
+(
+    // Needed for availability of porous baffle boundary in potentialFoam
+    "libturbulenceModels.so"
+);
+
+functions
+{
+#includeFunc CourantNo
+
+
+    inletFlux
+    {
+        type            surfaceFieldValue;
+        libs            ("libfieldFunctionObjects.so");
+        writeControl   timeStep;
+        log             true;
+        // Output field values as well
+        writeFields     false;
+        regionType      patch;
+        name            inlet;
+        operation       sum;
+
+        fields
+        (
+            phi
+        );
+    }
+  
+    fieldMinMax
+    {
+        type        fieldMinMax;
+        functionObjectLibs ("libfieldFunctionObjects.so");
+
+        writeControl    timeStep;
+        writeInterval   1;
+
+        writeFields     false;
+        log             true;
+
+        regionType      all;
+
+        fields (U p);
+
+    }  
+
+}
+
+// ************************************************************************* //

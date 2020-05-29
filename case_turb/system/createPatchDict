@@ -10,33 +10,57 @@ FoamFile
     version     2.0;
     format      ascii;
     class       dictionary;
-    object      changeDictionaryDict;
+    object      createPatchDict;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-boundary
-{
-    inlet
+pointSync false;
+
+// Patches to create.
+patches
+(
     {
-        type        patch;
+        name inlet;
+        patchInfo
+        {
+            type patch;
+        }
+        constructFrom patches;
+        patches ( face5 );
     }
 
-    outlet
     {
-        type        patch;
+        name outlet;
+        patchInfo
+        {
+            type patch;
+        }
+        constructFrom patches;
+        patches ( face6 );
     }
 
-    wall
     {
-        type        wall;
+        name wall;
+        patchInfo
+        {
+            type wall;
+        }
+        constructFrom patches;
+        patches ( face0 face1 face2 face3 face4 face7 face8 face9 face10);
+    }
+
+    {
+        name defaultFaces;
+        patchInfo
+        {
+            type patch;
+        }
+        constructFrom patches;
+        patches ( face11 );
     }
 
 
-    "defaultFaces"
-    {
-        type        wall;
-    }
+);
 
-}
 
 // ************************************************************************* //

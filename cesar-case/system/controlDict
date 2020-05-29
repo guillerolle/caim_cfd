@@ -21,20 +21,26 @@ startFrom       latestTime; //startTime;
 startTime       0;
 
 stopAt          endTime;
+//stopAt          writeNow;
 
-deltaT          0.0002;
-
+//Running pimple: transient
+deltaT          0.00002;
 endTime         1.0;
-
 writeControl    adjustableRunTime;
-
 writeInterval   0.01;
+
+//Running simple: steady
+//deltaT          1;
+//endTime         1000;
+//writeControl    timeStep;
+//writeInterval   100;
+
 
 purgeWrite      0;
 
-adjustTimeStep  no;
+adjustTimeStep  yes;
 
-maxCo           5;
+maxCo           10;
 
 
 writeFormat     ascii;
@@ -53,6 +59,42 @@ libs
 functions
 {
 #includeFunc CourantNo
+
+
+    inletFlux
+    {
+        type            surfaceFieldValue;
+        libs            ("libfieldFunctionObjects.so");
+        writeControl   timeStep;
+        log             true;
+        // Output field values as well
+        writeFields     false;
+        regionType      patch;
+        name            inlet;
+        operation       sum;
+
+        fields
+        (
+            phi
+        );
+    }
+  
+    fieldMinMax
+    {
+        type        fieldMinMax;
+        functionObjectLibs ("libfieldFunctionObjects.so");
+
+        writeControl    timeStep;
+        writeInterval   1;
+
+        writeFields     false;
+        log             true;
+
+        regionType      all;
+
+        fields (U p);
+
+    }  
 
 }
 
