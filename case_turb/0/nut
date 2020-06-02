@@ -1,0 +1,79 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Version:  7
+     \\/     M anipulation  |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       volScalarField;
+    location    "0";
+    object      nut;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+dimensions      [0 2 -1 0 0 0 0];
+
+internalField   uniform 0;
+
+boundaryField
+{
+    inlet
+    {
+        type            calculated;
+        value           uniform 0;
+    }
+    outlet
+    {
+        type            calculated;
+        value           uniform 0;
+    }
+    wall
+    {
+/*
+        type           nutLowReWallFunction;
+        value           uniform 0;
+*/
+        type            nutkWallFunction;
+        Cmu             0.09;
+        kappa           0.41;
+        E               9.8;
+        value           uniform 0;
+/*
+// para correr con ley de pared para bajos Reynolds
+// OJO : activar tambien k y epsilon u omega con fixedValue a valores bajos
+        type            nutLowReWallFunction;
+        value           uniform 0;
+*/
+/*
+// para correr con rugosidad
+        type            nutkRoughWallFunction;
+        Ks              uniform 100e-6;
+        Cs              uniform 0.5;
+        value           $internalField;
+*/
+    }
+
+    defaultFaces
+    {
+        type            nutkWallFunction;
+        Cmu             0.09;
+        kappa           0.41;
+        E               9.8;
+        value           uniform 0;
+    }
+
+    "procB.*"
+    {
+        type            processor;
+        value           uniform 0;
+    }
+
+
+}
+
+
+// ************************************************************************* //
