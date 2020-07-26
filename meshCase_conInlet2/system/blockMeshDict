@@ -1,0 +1,53 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  4.x                                   |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     4.0;
+    format      ascii;
+    class       dictionary;
+    location    "system";
+    object      blockMeshDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+xMin    -0.005;
+xMax    0.0975;
+yMin    -0.015887499999998736;
+yMax    0.012321898363435732;
+zMin    -0.012315960290475407;
+zMax    0.012315960290475407;
+cellsX  103;
+cellsY  29;
+cellsZ  25;
+
+vertices
+(
+    ( $xMin  $yMin  $zMin)
+    ( $xMax  $yMin  $zMin)
+    ( $xMax  $yMax  $zMin)
+    ( $xMin  $yMax  $zMin)
+    ( $xMin  $yMin  $zMax)
+    ( $xMax  $yMin  $zMax)
+    ( $xMax  $yMax  $zMax)
+    ( $xMin  $yMax  $zMax)
+);
+
+blocks
+(
+    hex (0 1 2 3 4 5 6 7) ($cellsX $cellsY $cellsZ) simpleGrading (1 1 1)
+);
+
+edges
+(
+);
+
+boundary
+(
+);
+
+// ************************************************************************* //
