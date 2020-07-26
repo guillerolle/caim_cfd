@@ -127,7 +127,7 @@ castellatedMeshControls
 
         MeshRefinement
         {
-            level (2 2);
+            level (3 3);
             faceZone MeshRefinement;
         }
 
