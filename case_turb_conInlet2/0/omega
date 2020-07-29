@@ -25,7 +25,12 @@ internalField   uniform $w0;
 
 boundaryField
 {
-    inlet
+    inlet1
+    {
+        type            fixedValue;
+        value           $internalField;
+    }
+    inlet2
     {
         type            fixedValue;
         value           $internalField;

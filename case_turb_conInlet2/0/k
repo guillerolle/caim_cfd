@@ -24,7 +24,13 @@ internalField   uniform $k0;
 
 boundaryField
 {
-    inlet
+    inlet1
+    {
+        type            turbulentIntensityKineticEnergyInlet;
+        intensity       0.05;
+        value           uniform 1;
+    }
+    inlet2
     {
         type            turbulentIntensityKineticEnergyInlet;
         intensity       0.05;

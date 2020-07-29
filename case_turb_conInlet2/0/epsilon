@@ -30,7 +30,13 @@ internalField   uniform $e0;
 
 boundaryField
 {
-    inlet
+    inlet1
+    {
+        type            turbulentMixingLengthDissipationRateInlet;
+        mixingLength    $ml; // 0.5;
+        value           uniform $e0;
+    }
+    inlet2
     {
         type            turbulentMixingLengthDissipationRateInlet;
         mixingLength    $ml; // 0.5;

@@ -21,11 +21,15 @@ internalField   uniform ( 0 0 0 );
 
 boundaryField
 {
-    inlet
+    inlet1
     {
         type            zeroGradient;
 //        type            pressureInletOutletVelocity;
 //        value           $internalField;
+    }
+    inlet2
+    {
+       type 		zeroGradient;
     }
     outlet
     {
