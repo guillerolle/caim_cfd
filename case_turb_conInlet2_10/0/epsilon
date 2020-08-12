@@ -1,0 +1,76 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Version:  7
+     \\/     M anipulation  |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       volScalarField;
+    location    "0";
+    object      epsilon;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+dimensions      [0 2 -3 0 0 0 0];
+
+// 1.5*(0.05*1)^2 = 2.5^-3
+k0          0.00375;
+
+// nu=1e-5; TVR = 100; 0.09*k^2/(TVR*nu) = 1.2656e+01
+e0          0.0012656;
+
+// mixing length = 0.09*k^(3/2)/epsilon = 1.6330e-03
+ml          1.633e-2;
+
+internalField   uniform $e0;
+
+boundaryField
+{
+    inlet1
+    {
+        type            turbulentMixingLengthDissipationRateInlet;
+        mixingLength    $ml; // 0.5;
+        value           uniform $e0;
+    }
+    inlet2
+    {
+        type            turbulentMixingLengthDissipationRateInlet;
+        mixingLength    $ml; // 0.5;
+        value           uniform $e0;
+    }
+    outlet
+    {
+        type            inletOutlet;
+        inletValue      uniform $e0;
+        value           uniform $e0;
+    }
+    wall
+    {
+        type            epsilonWallFunction;
+        value           uniform $e0;
+/*
+        type            fixedValue; 
+        value           uniform 1e-8;
+*/
+    }
+
+    defaultFaces
+    {
+        type            epsilonWallFunction;
+        value           uniform $e0;
+    }
+
+    "procB.*"
+    {
+        type            processor;
+        value           uniform 0;
+    }
+
+}
+
+
+// ************************************************************************* //

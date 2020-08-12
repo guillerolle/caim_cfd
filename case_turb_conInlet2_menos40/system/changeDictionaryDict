@@ -1,0 +1,145 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  4.x                                   |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      changeDictionaryDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+boundary
+{
+    inlet1
+    {
+        type        patch;
+    }
+
+    inlet2
+    {
+	type	    patch;
+    }
+
+    outlet
+    {
+        type        patch;
+    }
+
+    wall
+    {
+        type        wall;
+    }
+
+
+    "defaultFaces"
+    {
+        type        wall;
+    }
+
+    "procB.*"
+    {
+        type            processor;
+    }
+
+}
+
+p
+{
+  internalField   uniform 0.0;
+
+  boundaryField
+  {
+      inlet1
+      {
+          type        totalPressure;
+          value       uniform 320.64128256513027;
+      }
+
+      inlet2
+      {
+          type        totalPressure;
+          value       uniform -40;
+      }
+
+      outlet
+      {
+          type        totalPressure;
+          p0          uniform 100.20040080160321;
+          value       $internalField;
+      }
+
+      wall
+      {
+          type        zeroGradient;
+      }
+
+      defaultFaces
+      {
+          type        zeroGradient;
+      }
+
+      "procB.*"
+      {
+          type            processor;
+          value           uniform 0;
+      }
+
+  }
+}
+
+
+U
+{
+  internalField   uniform  (0 0 0);
+
+  boundaryField
+  {
+
+      inlet1
+      {
+          type        pressureInletOutletVelocity;
+          value       $internalField;
+      }
+
+      inlet2
+      {
+          type        pressureInletOutletVelocity;
+          value       $internalField;
+      }
+
+      outlet
+      {
+          type        pressureInletOutletVelocity;
+          value       $internalField;
+      }
+
+      wall
+      {
+          // movingWallVelocity reduces to fixedValue if the mesh is not moving
+          type        movingWallVelocity;
+          value       uniform (0 0 0);
+      }
+
+      defaultFaces
+      {
+          type        slip;
+          value       $internalField;
+      }
+
+      "procB.*"
+      {
+          type            processor;
+          value           uniform  (0 0 0);
+      }
+
+  }
+}
+
+
+// ************************************************************************* //
