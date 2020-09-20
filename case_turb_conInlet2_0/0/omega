@@ -1,0 +1,71 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Version:  7  
+     \\/     M anipulation  |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       volScalarField;
+    location    "0";
+    object      omega;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+dimensions      [0 0 -1 0 0 0 0];
+
+// k=0.375;beta=30;nu=1e-5;omega=k/nu/beta; omega =  1250 --> k=0.00375 -> omega=12.5
+// otro calculo que encontre es haciendo k^(1/2)/C_mu^(1/4)/nu y esto da aprox 650
+w0            12.50; // 650; // 1250;              
+
+internalField   uniform $w0;
+
+boundaryField
+{
+    inlet1
+    {
+        type            fixedValue;
+        value           $internalField;
+    }
+    inlet2
+    {
+        type            fixedValue;
+        value           $internalField;
+    }
+    outlet
+    {
+        type            zeroGradient;
+    }
+    wall
+    {
+        type            omegaWallFunction;
+        value           $internalField;
+/*
+        type            zeroGradient;
+        value           0;
+*/
+    }
+
+    defaultFaces
+    {
+        type            omegaWallFunction;
+        value           $internalField;
+/*
+        type            zeroGradient;
+        value           0;
+*/
+    }
+
+    "procB.*"
+    {
+        type            processor;
+        value           uniform 0;
+    }
+
+}
+
+
+// ************************************************************************* //

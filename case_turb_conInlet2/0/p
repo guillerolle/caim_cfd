@@ -21,10 +21,18 @@ internalField   uniform 0;
 
 boundaryField
 {
-    inlet
+    inlet1
     {
         type            totalPressure;
         p0              uniform 320.64128;
+        value           $internalField;
+/*        type            fixedValue;*/
+/*        value           uniform 320.64128;*/
+    }
+    inlet2
+    {
+        type            totalPressure;
+        p0              uniform 100;
         value           $internalField;
 /*        type            fixedValue;*/
 /*        value           uniform 320.64128;*/

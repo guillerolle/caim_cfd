@@ -1,0 +1,255 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  4.x                                   |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      controlDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+application     pimpleFoam;
+
+startFrom       latestTime; //startTime;
+
+startTime       0;
+
+stopAt          endTime;
+//stopAt          writeNow;
+
+//Running pimple: transient
+deltaT          2e-6;
+endTime         0.050;
+writeControl    adjustableRunTime;
+writeInterval   0.005;
+
+//Running simple: steady
+//deltaT          1;
+//endTime         1000;
+//writeControl    timeStep;
+//writeInterval   100;
+
+
+purgeWrite      10;
+//purgeWrite      0;
+
+adjustTimeStep  yes;
+
+maxCo           5;
+
+
+writeFormat     ascii;
+
+writePrecision  8;
+
+
+runTimeModifiable true;
+
+libs
+(
+    // Needed for availability of porous baffle boundary in potentialFoam
+    "libturbulenceModels.so"
+);
+
+functions
+{
+#includeFunc CourantNo
+
+
+    inlet1Flux
+    {
+        type            surfaceFieldValue;
+        libs            ("libfieldFunctionObjects.so");
+        writeControl   timeStep;
+        log             true;
+        // Output field values as well
+        writeFields     false;
+        regionType      patch;
+        name            inlet1;
+        operation       sum;
+
+        fields
+        (
+            phi
+        );
+    }
+    inlet2Flux
+    {
+        type            surfaceFieldValue;
+        libs            ("libfieldFunctionObjects.so");
+        writeControl   timeStep;
+        log             true;
+        // Output field values as well
+        writeFields     false;
+        regionType      patch;
+        name            inlet2;
+        operation       sum;
+
+        fields
+        (
+            phi
+        );
+    } 
+
+
+    outletFlux
+    {
+        type            surfaceFieldValue;
+        libs            ("libfieldFunctionObjects.so");
+        writeControl   timeStep;
+        log             true;
+        // Output field values as well
+        writeFields     false;
+        regionType      patch;
+        name            outlet;
+        operation       sum;
+
+        fields
+        (
+            phi
+        );
+    } 
+
+
+
+    fieldMinMax
+    {
+        type        fieldMinMax;
+        functionObjectLibs ("libfieldFunctionObjects.so");
+
+        writeControl    timeStep;
+        writeInterval   1;
+
+        writeFields     false;
+        log             true;
+
+        regionType      all;
+
+        fields (U p);
+
+    }  
+
+    sampleSets
+    {
+        type    sets;
+        libs    ("libsampling.so");
+
+//        writeControl    adjustableRunTime;
+//        writeInterval   1e-4;
+
+        writeControl    writeTime;
+
+        setFormat           raw;
+        interpolationScheme cell;
+        fields ( U p );
+
+        sets
+        (
+            Axis
+            {
+                type    lineCellFace;
+                axis    xyz;
+                start   (-0.0073 0.0 0.0);
+                end     (0.092 0.0 0.0);
+                nPoints 1000;
+            }
+
+        );
+
+    }
+
+    cuttingPlane
+    {
+        type            surfaces;
+        libs            ("libsampling.so");
+
+        writeControl    adjustableRunTime;
+        writeInterval   2.e-5;
+
+        surfaceFormat   vtk;
+        fields          (alpha.water U p_rgh);   
+
+        interpolationScheme cell;
+
+        surfaces
+        (
+            yNormal
+            {
+                type            cuttingPlane;
+                planeType       pointAndNormal;
+                axis    xyz;
+                pointAndNormalDict
+                {
+                    point   (0 0.0 0);
+                    normal  (0 1 0);
+                }
+                interpolate     true;
+            }
+
+            zNormal
+            {
+                type            cuttingPlane;
+                planeType       pointAndNormal;
+                axis    xyz;
+                pointAndNormalDict
+                {
+                    point   (0 0.0 0);
+                    normal  (0 0 1);
+                }
+                interpolate     true;
+            }
+
+
+            xNormal0.01
+            {
+                type            cuttingPlane;
+                planeType       pointAndNormal;
+                axis    xyz;
+                pointAndNormalDict
+                {
+                    point   (0.01 0 0);
+                    normal  (1 0 0);
+                }
+                interpolate     true;
+            }
+
+            xNormal0.04
+            {
+                type            cuttingPlane;
+                planeType       pointAndNormal;
+                axis    xyz;
+                pointAndNormalDict
+                {
+                    point   (0.04 0 0);
+                    normal  (1 0 0);
+                }
+                interpolate     true;
+            }
+
+            xNormal0.09
+            {
+                type            cuttingPlane;
+                planeType       pointAndNormal;
+                axis    xyz;
+                pointAndNormalDict
+                {
+                    point   (0.09 0 0);
+                    normal  (1 0 0);
+                }
+                interpolate     true;
+            }
+            
+
+        );
+        
+    }
+
+}
+
+// ************************************************************************* //
