@@ -1,0 +1,125 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  4.x                                   |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      controlDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+//application     pimpleFoam;
+application     simpleFoam;
+
+
+startFrom       latestTime; //startTime;
+
+startTime       0.06;
+
+stopAt          endTime;
+//stopAt          writeNow;
+
+//Running pimple: transient
+deltaT          2e-6;
+endTime         0.100;
+writeControl    adjustableRunTime;
+writeInterval   0.005;
+
+//Running simple: steady
+//deltaT          1;
+//endTime         1000;
+//writeControl    timeStep;
+//writeInterval   100;
+
+
+purgeWrite      10;
+//purgeWrite      0;
+
+adjustTimeStep  yes;
+
+maxCo           5;
+
+
+writeFormat     ascii;
+
+writePrecision  8;
+
+
+runTimeModifiable true;
+
+libs
+(
+    // Needed for availability of porous baffle boundary in potentialFoam
+    "libturbulenceModels.so"
+);
+
+functions
+{
+#includeFunc CourantNo
+
+
+    inlet1Flux
+    {
+        type            surfaceFieldValue;
+        libs            ("libfieldFunctionObjects.so");
+        writeControl   timeStep;
+        log             true;
+        // Output field values as well
+        writeFields     false;
+        regionType      patch;
+        name            inlet1;
+        operation       sum;
+
+        fields
+        (
+            phi
+        );
+    }
+    inlet2Flux
+    {
+        type            surfaceFieldValue;
+        libs            ("libfieldFunctionObjects.so");
+        writeControl   timeStep;
+        log             true;
+        // Output field values as well
+        writeFields     false;
+        regionType      patch;
+        name            inlet2;
+        operation       sum;
+
+        fields
+        (
+            phi
+        );
+    } 
+
+
+    outletFlux
+    {
+        type            surfaceFieldValue;
+        libs            ("libfieldFunctionObjects.so");
+        writeControl   timeStep;
+        log             true;
+        // Output field values as well
+        writeFields     false;
+        regionType      patch;
+        name            outlet;
+        operation       sum;
+
+        fields
+        (
+            phi
+        );
+    } 
+
+
+
+}
+
+// ************************************************************************* //

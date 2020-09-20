@@ -1,0 +1,29 @@
+[0] 
+[0] 
+[0] --> FOAM FATAL ERROR: 
+[0] Unknown functionEntry 'application' in "/share/storage/grolle/OpenFOAM/grolle-7/run/caim_cfd/case_turb_conInlet2_0_TurbInlet1_3/system/controlDict" near line 17
+
+Valid functionEntries are :
+
+11
+(
+if
+inputMode
+codeStream
+include
+neg
+calc
+ifeq
+remove
+includeIfPresent
+includeEtc
+includeFunc
+)
+[0] 
+[0] 
+[0]     From function static bool Foam::functionEntry::execute(const Foam::word&, Foam::dictionary&, Foam::Istream&)
+[0]     in file db/dictionary/functionEntries/functionEntry/functionEntry.C at line 109.
+[0] 
+FOAM parallel run exiting
+[0] 
+[n-1-0:26528] [[45674,0],0] ORTE_ERROR_LOG: Data unpack would read past end of buffer in file util/show_help.c at line 501
