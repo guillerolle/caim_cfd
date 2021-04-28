@@ -234,7 +234,7 @@ acs-*.bib
 
 *.nav
 
-*.pre
+#*.pre
 
 *.snm
 
