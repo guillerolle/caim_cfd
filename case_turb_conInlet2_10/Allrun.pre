@@ -1,0 +1,66 @@
+#!/bin/bash
+
+runCommand()
+{
+    if [ "$1" == "mpirun" ]; then sol="$4"; else sol="$1"; fi
+    sol=$(basename -- "$sol")
+    sol="${sol%.*}"
+    if [ -f log."$sol" ]; then rm log."$sol"; fi
+    "$@" 1> >(tee -a log."$sol") 2> >(tee -a log."$sol" >&2)
+    err=$?
+    if [ ! $err -eq 0 ]; then exit $err; fi
+}
+
+procs=`grep numberOfSubdomains system/decomposeParDict | cut -f2 -d ' ' | cut -f1 -d ';'`
+echo "Preparing the case to run in $procs processors"
+
+# Copy mesh from mesh case dir if available
+MESHDIR="../meshCase_conInlet2"
+if [ -f "$MESHDIR"/constant/polyMesh/faces ]
+then
+    rm -r constant/polyMesh 2> /dev/null
+    cp -r "$MESHDIR"/constant/polyMesh constant/polyMesh
+elif [ ! -f constant/polyMesh/faces ]
+then
+    echo "Fatal error: Unable to find mesh in directory $MESHDIR" 1>&2
+    exit 1
+fi
+
+if [ "$procs" -le 2 ]
+then
+    # Update patch name and type
+    runCommand createPatch -overwrite
+
+    # serial run
+    runCommand snappyHexMesh -overwrite -dict system/snappyHexMeshDict.layers
+
+    # Update patch name and type
+    runCommand createPatch -overwrite
+
+    # Update BC
+    runCommand changeDictionary
+
+    # Check final mesh
+    runCommand checkMesh
+
+else
+    # Update patch name and type
+    runCommand createPatch -overwrite
+
+    # Run application in parallel
+    runCommand decomposePar -force -copyZero
+
+    # Create near wall layers to avoid bad BL resolution
+    runCommand mpirun -n $procs snappyHexMesh -parallel -overwrite -dict system/snappyHexMeshDict.layers
+
+    # Update patch name and type
+    runCommand mpirun -n $procs createPatch -parallel -overwrite
+
+    # Update BC
+    runCommand mpirun -n $procs changeDictionary -parallel 
+
+    # Check final mesh
+    runCommand mpirun -n $procs checkMesh
+
+fi
+
